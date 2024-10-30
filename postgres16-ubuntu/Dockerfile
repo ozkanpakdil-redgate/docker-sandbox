@@ -43,6 +43,6 @@ COPY start-services.sh ./start-services.sh
 RUN chmod +x ./start-services.sh
 CMD ["./start-services.sh"]
 
-# docker build --no-cache  -t postgresdockerfile .
-# docker run -dit --name postgrescontainer -p 5432:5432 -p 22:22 postgresdockerfile
-# docker cp postgrescontainer:/root/.ssh/id_rsa ./root.key
+# nerdctl build --no-cache  -t postgresnerdctlfile .
+# nerdctl run -dt --name postgrescontainer -p 5432:5432 -p 22:22 postgresnerdctlfile
+# nerdctl cp postgrescontainer:/root/.ssh/id_rsa ./root.key
