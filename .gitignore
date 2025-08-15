@@ -1,0 +1,10 @@
+*.pfx
+*.crt
+*.key
+.idea
+**/certs/*
+**/client-certs/*
+**/bin/*
+**/obj/*
+postgres-cluster/windows-cert-exporter-dotnet/bin/*
+postgres-cluster/windows-cert-exporter-dotnet/obj/*

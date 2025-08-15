@@ -1,0 +1,32 @@
+# Generated certificates and keys
+*/certs/
+client-certs/
+combined-certs/
+*/root.key
+
+# CA directory with generated certificates (contains sensitive private keys)
+ca/*.crt
+ca/*.key
+ca/*.pfx
+ca/*.srl
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Backup files
+*.bak
+*~
