@@ -49,7 +49,7 @@ ST = State
 L = City
 O = PostgreSQLCluster
 OU = Client
-CN = redgatemonitor
+CN = alien
 EOF
 
 # Generate client certificate signing request using config file

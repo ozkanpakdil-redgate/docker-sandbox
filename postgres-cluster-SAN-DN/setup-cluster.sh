@@ -62,13 +62,6 @@ generate_ca() {
     
     cd "$SCRIPT_DIR/ca"
     
-    # Check if CA already exists
-    if [[ -f "ca.crt" ]]; then
-        print_color "✓ Root CA already exists, skipping generation" "green"
-        cd "$SCRIPT_DIR"
-        return
-    fi
-    
     # Run the CA generation script
     ./generate-ca.sh
     
