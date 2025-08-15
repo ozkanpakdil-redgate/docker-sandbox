@@ -34,16 +34,28 @@ psql "host=postgres-node2.local port=5433 dbname=redgatemonitor user=redgatemoni
 psql "host=postgres-node3.local port=5434 dbname=redgatemonitor user=redgatemonitor sslmode=verify-full sslcert=./node3/certs/redgatemonitor.crt sslkey=./node3/certs/redgatemonitor.key sslrootcert=./node3/certs/ca.crt"
 ```
 
-### Option 2: Consolidated Client Certificate Bundle
-Create a single `client-certs/` directory with shared certificates:
+### Option 2: Consolidated Client Certificate Access
+Access client certificates directly from the CA directory or any node's certs directory:
 
 ```
-client-certs/
+ca/                             # Certificate Authority directory  
 ├── ca.crt                      # Root CA certificate
 ├── redgatemonitor.crt          # Client certificate  
 ├── redgatemonitor.key          # Client private key
 ├── redgatemonitor.pfx          # PFX bundle (password: changeme)
 └── redgatemonitor-nopass.pfx   # PFX bundle (no password)
+```
+
+Or use any node's certificate directory since they contain the same client certificates:
+
+```
+nodeX/certs/
+├── ca.crt                      # Root CA certificate (same for all nodes)
+├── redgatemonitor.crt          # Client certificate (same for all nodes, DN-based)
+├── redgatemonitor.key          # Client private key (same for all nodes)
+├── redgatemonitor.pfx          # PFX bundle (same for all nodes)
+├── redgatemonitor-nopass.pfx   # PFX bundle (same for all nodes)
+└── server.crt                  # Server certificate (node-specific SAN)
 ```
 
 **Important:** You must connect to the correct hostname that matches each server's certificate:
@@ -73,16 +85,20 @@ IP.2 = ::1
 - Easier certificate management
 
 **How to use:**
+
 ```bash
-# Use the consolidated client-certs/ directory for any node
-psql "host=postgres-nodeX.local port=XXXX dbname=redgatemonitor user=redgatemonitor sslmode=verify-full sslcert=./client-certs/redgatemonitor.crt sslkey=./client-certs/redgatemonitor.key sslrootcert=./client-certs/ca.crt"
+# Use certificates from the CA directory for any node
+psql "host=postgres-nodeX.local port=XXXX dbname=redgatemonitor user=redgatemonitor sslmode=verify-full sslcert=./ca/redgatemonitor.crt sslkey=./ca/redgatemonitor.key sslrootcert=./ca/ca.crt"
+
+# Or use any node's certificate directory (they contain the same client certificates)
+psql "host=postgres-nodeX.local port=XXXX dbname=redgatemonitor user=redgatemonitor sslmode=verify-full sslcert=./node1/certs/redgatemonitor.crt sslkey=./node1/certs/redgatemonitor.key sslrootcert=./node1/certs/ca.crt"
 ```
 
 ### Option 4: Windows Certificate Store Integration
 
 **PFX Files for Windows Import:**
 
-The `client-certs/` directory now includes PFX files for easy import into Windows Certificate Store:
+The `ca/` directory includes PFX files for easy import into Windows Certificate Store:
 
 - `redgatemonitor.pfx` - Password protected (password: `changeme`)
 - `redgatemonitor-nopass.pfx` - No password required
@@ -113,11 +129,11 @@ docker-compose down && docker-compose up --build -d
 
    ```powershell
    # Import without password
-   Import-PfxCertificate -FilePath ".\client-certs\redgatemonitor-nopass.pfx" -CertStoreLocation "Cert:\CurrentUser\My"
+   Import-PfxCertificate -FilePath ".\ca\redgatemonitor-nopass.pfx" -CertStoreLocation "Cert:\CurrentUser\My"
    
    # Or with password
    $pwd = ConvertTo-SecureString -String "changeme" -Force -AsPlainText
-   Import-PfxCertificate -FilePath ".\client-certs\redgatemonitor.pfx" -CertStoreLocation "Cert:\CurrentUser\My" -Password $pwd
+   Import-PfxCertificate -FilePath ".\ca\redgatemonitor.pfx" -CertStoreLocation "Cert:\CurrentUser\My" -Password $pwd
    ```
 
 **Benefits:**

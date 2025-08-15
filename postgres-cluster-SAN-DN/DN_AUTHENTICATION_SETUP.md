@@ -37,7 +37,7 @@ cert_map   "CN=alien,OU=Client,O=PostgreSQLCluster,L=City,ST=State,C=US"    redg
 **SSL with Certificate Authentication:**
 
 ```bash
-psql "host=localhost port=5432 dbname=redgatemonitor user=redgatemonitor sslmode=require sslcert=./client-certs/redgatemonitor.crt sslkey=./client-certs/redgatemonitor.key sslrootcert=./client-certs/ca.crt"
+psql "host=localhost port=5432 dbname=redgatemonitor user=redgatemonitor sslmode=require sslcert=./node1/certs/redgatemonitor.crt sslkey=./node1/certs/redgatemonitor.key sslrootcert=./node1/certs/ca.crt"
 ```
 
 **Non-SSL with Password Authentication:**

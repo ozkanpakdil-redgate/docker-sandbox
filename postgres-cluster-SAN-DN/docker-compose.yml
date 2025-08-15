@@ -17,7 +17,6 @@ services:
     shm_size: 256m
     volumes:
       - ./node1/certs:/tmp/certs
-      - ./client-certs:/tmp/client-certs
       - ./ca:/tmp/ca:ro
 
   postgres-node2:
@@ -38,7 +37,6 @@ services:
     shm_size: 256m
     volumes:
       - ./node2/certs:/tmp/certs
-      - ./client-certs:/tmp/client-certs
       - ./ca:/tmp/ca:ro
 
   postgres-node3:
@@ -59,5 +57,4 @@ services:
     shm_size: 256m
     volumes:
       - ./node3/certs:/tmp/certs
-      - ./client-certs:/tmp/client-certs
       - ./ca:/tmp/ca:ro

@@ -37,27 +37,32 @@ This cluster is configured to use **Distinguished Name (DN) authentication** ins
 docker-compose up -d --build
 ```
 
-### 2. Copy Client Certificates
+### 2. Access Client Certificates
 
 ```bash
-# Certificates are automatically copied to client-certs/ directory
-ls client-certs/
+# Certificates are available in multiple locations:
+# From CA directory:
+ls ca/
+
+# From any node directory (they contain the same client certificates):
+ls node1/certs/
 ```
 
 ## Connection Methods
 
 ### SSL Connections (Recommended)
 
-#### From Windows (using DN authentication):
+#### From Windows (using DN authentication)
+
 ```bash
 # Node 1
-psql "host=localhost port=5432 dbname=redgatemonitor user=CN=redgatemonitor sslmode=require sslcert=client-certs/redgatemonitor.crt sslkey=client-certs/redgatemonitor.key sslrootcert=client-certs/ca.crt"
+psql "host=localhost port=5432 dbname=redgatemonitor user=CN=redgatemonitor sslmode=require sslcert=node1/certs/redgatemonitor.crt sslkey=node1/certs/redgatemonitor.key sslrootcert=node1/certs/ca.crt"
 
 # Node 2
-psql "host=localhost port=5433 dbname=redgatemonitor user=CN=redgatemonitor sslmode=require sslcert=client-certs/redgatemonitor.crt sslkey=client-certs/redgatemonitor.key sslrootcert=client-certs/ca.crt"
+psql "host=localhost port=5433 dbname=redgatemonitor user=CN=redgatemonitor sslmode=require sslcert=node2/certs/redgatemonitor.crt sslkey=node2/certs/redgatemonitor.key sslrootcert=node2/certs/ca.crt"
 
 # Node 3
-psql "host=localhost port=5434 dbname=redgatemonitor user=CN=redgatemonitor sslmode=require sslcert=client-certs/redgatemonitor.crt sslkey=client-certs/redgatemonitor.key sslrootcert=client-certs/ca.crt"
+psql "host=localhost port=5434 dbname=redgatemonitor user=CN=redgatemonitor sslmode=require sslcert=node3/certs/redgatemonitor.crt sslkey=node3/certs/redgatemonitor.key sslrootcert=node3/certs/ca.crt"
 ```
 
 #### From inside containers:
@@ -103,12 +108,17 @@ The cluster uses `clientcert=verify-full` which requires:
 
 #### Permission Errors
 If you get "private key file has group or world access" error:
+
 ```bash
-# On Linux/macOS
-chmod 600 client-certs/redgatemonitor.key
+# On Linux/macOS (fix permissions for any certificate location)
+chmod 600 ca/redgatemonitor.key
+# or
+chmod 600 node1/certs/redgatemonitor.key
 
 # On Windows (in WSL or Git Bash)
-chmod 600 client-certs/redgatemonitor.key
+chmod 600 ca/redgatemonitor.key
+# or  
+chmod 600 node1/certs/redgatemonitor.key
 ```
 
 #### Certificate Verification Failed
@@ -146,14 +156,20 @@ openssl x509 -in client-certs/ca.crt -text -noout
 
 ### Viewing Certificate Information
 ```bash
-# View client certificate details
-openssl x509 -in client-certs/redgatemonitor.crt -text -noout
+# View client certificate details (from any location)
+openssl x509 -in ca/redgatemonitor.crt -text -noout
+# or
+openssl x509 -in node1/certs/redgatemonitor.crt -text -noout
 
 # View CA certificate details  
-openssl x509 -in client-certs/ca.crt -text -noout
+openssl x509 -in ca/ca.crt -text -noout
+# or
+openssl x509 -in node1/certs/ca.crt -text -noout
 
 # Verify certificate chain
-openssl verify -CAfile client-certs/ca.crt client-certs/redgatemonitor.crt
+openssl verify -CAfile ca/ca.crt ca/redgatemonitor.crt
+# or
+openssl verify -CAfile node1/certs/ca.crt node1/certs/redgatemonitor.crt
 ```
 
 ### Regenerating Certificates
@@ -187,7 +203,7 @@ function Connect-PostgreSQLNode {
     $port = 5431 + $NodeNumber
     
     if ($UseSSL) {
-        $connectionString = "host=localhost port=$port dbname=$Database user=redgatemonitor sslmode=require sslcert=client-certs/redgatemonitor.crt sslkey=client-certs/redgatemonitor.key sslrootcert=client-certs/ca.crt"
+        $connectionString = "host=localhost port=$port dbname=$Database user=redgatemonitor sslmode=require sslcert=node$NodeNumber/certs/redgatemonitor.crt sslkey=node$NodeNumber/certs/redgatemonitor.key sslrootcert=node$NodeNumber/certs/ca.crt"
     } else {
         $connectionString = "host=localhost port=$port dbname=$Database user=redgatemonitor password=changeme sslmode=disable"
     }
@@ -209,7 +225,7 @@ function Connect-PostgreSQLNode {
 5. **Audit access**: Monitor PostgreSQL logs for authentication attempts
 
 ## File Structure
-```
+```text
 postgres-cluster/
 ├── ca/                           # Certificate Authority files
 │   ├── ca.crt                   # Root CA certificate
@@ -217,10 +233,6 @@ postgres-cluster/
 │   ├── redgatemonitor.crt       # Shared client certificate
 │   ├── redgatemonitor.key       # Shared client private key
 │   └── redgatemonitor.pfx       # PKCS#12 bundle
-├── client-certs/                # Client certificates for Windows
-│   ├── ca.crt                   # Copy of CA certificate
-│   ├── redgatemonitor.crt       # Copy of client certificate
-│   └── redgatemonitor.key       # Copy of client private key
 ├── node1/certs/                 # Node 1 certificates
 ├── node2/certs/                 # Node 2 certificates
 ├── node3/certs/                 # Node 3 certificates

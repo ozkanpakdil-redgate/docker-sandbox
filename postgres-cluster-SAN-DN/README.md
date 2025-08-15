@@ -43,9 +43,12 @@ A Docker-based PostgreSQL 17 cluster with SSL/TLS encryption and Distinguished N
 
 ```bash
 # Use user=CN=redgatemonitor for SSL connections
-psql "host=localhost port=5432 dbname=redgatemonitor user=CN=redgatemonitor sslmode=verify-full sslcert=client-certs/redgatemonitor.crt sslkey=client-certs/redgatemonitor.key sslrootcert=client-certs/ca.crt"
+psql "host=localhost port=5432 dbname=redgatemonitor user=CN=redgatemonitor sslmode=verify-full sslcert=node1/certs/redgatemonitor.crt sslkey=node1/certs/redgatemonitor.key sslrootcert=node1/certs/ca.crt"
 
-# Change port for different nodes: 5432 (node1), 5433 (node2), 5434 (node3)
+# Change port and node for different nodes: 
+# node1: port=5432, certs in node1/certs/
+# node2: port=5433, certs in node2/certs/  
+# node3: port=5434, certs in node3/certs/
 ```
 
 ### Password Authentication
@@ -63,8 +66,7 @@ psql "host=localhost port=5432 dbname=redgatemonitor user=redgatemonitor passwor
 │   ├── redgatemonitor.crt     # Client certificate
 │   ├── redgatemonitor.key     # Client private key
 │   └── redgatemonitor.pfx     # Windows PKCS#12 bundle
-├── client-certs/              # Client certificates (copied from ca/)
-├── node1-3/certs/             # Node-specific certificates
+├── node1-3/certs/             # Node-specific certificates (includes client certs)
 ├── shared/                    # Docker configuration
 ├── docker-compose.yml         # Docker Compose setup
 ├── setup-cluster.sh          # Main setup script
@@ -73,8 +75,8 @@ psql "host=localhost port=5432 dbname=redgatemonitor user=redgatemonitor passwor
 ## � Testing
 
 ```bash
-# Manual certificate verification
-openssl verify -CAfile client-certs/ca.crt client-certs/redgatemonitor.crt
+# Manual certificate verification (use any node's certs)
+openssl verify -CAfile node1/certs/ca.crt node1/certs/redgatemonitor.crt
 
 # Check container status
 docker ps

@@ -1,6 +1,5 @@
 # Generated certificates and keys
 */certs/
-client-certs/
 combined-certs/
 */root.key
 

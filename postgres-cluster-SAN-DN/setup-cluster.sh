@@ -1,6 +1,5 @@
 #!/bin/bash
 # PostgreSQL Cluster Setup Script with DN Authentication
-# Converts all PowerShell functionality to pure bash
 
 set -e
 
@@ -192,24 +191,7 @@ show_connection_info() {
     print_color "Quick connect scripts:" "yellow"
 }
 
-copy_client_certs() {
-    # Create client-certs directory for easy access
-    local client_certs_dir="$SCRIPT_DIR/client-certs"
-    mkdir -p "$client_certs_dir"
-    
-    if [[ -f "$SCRIPT_DIR/ca/ca.crt" ]]; then
-        cp "$SCRIPT_DIR/ca/ca.crt" "$client_certs_dir/"
-        cp "$SCRIPT_DIR/ca/redgatemonitor.crt" "$client_certs_dir/"
-        cp "$SCRIPT_DIR/ca/redgatemonitor.key" "$client_certs_dir/"
-        if [[ -f "$SCRIPT_DIR/ca/redgatemonitor.pfx" ]]; then
-            cp "$SCRIPT_DIR/ca/redgatemonitor.pfx" "$client_certs_dir/"
-        fi
-        if [[ -f "$SCRIPT_DIR/ca/redgatemonitor-nopass.pfx" ]]; then
-            cp "$SCRIPT_DIR/ca/redgatemonitor-nopass.pfx" "$client_certs_dir/"
-        fi
-        print_color "✓ Client certificates copied to ./client-certs/" "green"
-    fi
-}
+
 
 # Main execution
 case "${ACTION,,}" in
@@ -222,7 +204,6 @@ case "${ACTION,,}" in
         for node in "${NODES[@]}"; do
             start_node "$node"
         done
-        copy_client_certs
         show_connection_info
         ;;
     "start")
@@ -257,7 +238,6 @@ case "${ACTION,,}" in
             done
         fi
         
-        copy_client_certs
         show_connection_info
         ;;
     *)
