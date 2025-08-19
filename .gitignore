@@ -1,4 +1,5 @@
 *.pfx
+*.sln
 *.crt
 *.key
 .idea
