@@ -4,7 +4,7 @@
 
 PostgreSQL authenticates users using **Distinguished Name (DN) mapping** from client certificates. Instead of creating users with complex DN names, we use `pg_ident.conf` to map certificate DNs to simple PostgreSQL usernames.
 
-**Certificate DN**: `CN=alien,OU=Client,O=PostgreSQLCluster,L=City,ST=State,C=US`  
+**Certificate DN**: `CN=redgatemonitor,OU=Client,O=PostgreSQLCluster,L=City,ST=State,C=US`  
 **PostgreSQL User**: `redgatemonitor` (simple username)
 
 ## Configuration
@@ -13,7 +13,7 @@ PostgreSQL authenticates users using **Distinguished Name (DN) mapping** from cl
 
 ```conf
 # MAPNAME             SYSTEM-USERNAME      PG-USERNAME  
-cert_map   "CN=alien,OU=Client,O=PostgreSQLCluster,L=City,ST=State,C=US"    redgatemonitor
+cert_map   "CN=redgatemonitor,OU=Client,O=PostgreSQLCluster,L=City,ST=State,C=US"    redgatemonitor
 ```
 
 ### Database Users
