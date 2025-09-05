@@ -13,7 +13,7 @@ apt-get install -y wget gnupg lsb-release openssh-server nano less net-tools ipt
 
 # Set up PostgreSQL repository
 sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+wget -O /etc/apt/trusted.gpg.d/postgres.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
 
 # Update package list and install PostgreSQL 17
 apt-get update

@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM debian:stable-slim
 
 ARG TZ=Etc/UTC
 
